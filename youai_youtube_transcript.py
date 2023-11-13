@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from youtube_transcript_api import YouTubeTranscriptApi
-
+from fastapi.responses import PlainTextResponse
 app = FastAPI()
 
 @app.get("/transcript/{video_id}")
