@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from YouTubeTranscriptApi import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi
 
 app = FastAPI()
 
