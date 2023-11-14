@@ -28,24 +28,28 @@ async def get_transcript_for_subtitles(video_id: str):
     
     return {"video_id": video_id, "transcript": transcript}
 
-# Define the structure of the data received in the POST request
-class TranscriptEntry(BaseModel):
+# Define the structure of each transcript segment
+class TranscriptSegment(BaseModel):
     start: float
     duration: float
     text: str
+
+# Define the structure of the incoming request
+class TranscriptRequest(BaseModel):
+    segments: List[TranscriptSegment]
 
 # Function to convert seconds to SRT time format
 def seconds_to_srt_time(seconds):
     return str(datetime.timedelta(seconds=seconds)).replace('.', ',')
 
 @app.post("/convert_to_srt")
-async def convert_to_srt(transcript_entries: List[TranscriptEntry]):
+async def convert_to_srt(request: TranscriptRequest):
     srt_output = []
 
-    for i, entry in enumerate(transcript_entries, start=1):
-        start_time = seconds_to_srt_time(entry.start)
-        end_time = seconds_to_srt_time(entry.start + entry.duration)
-        text = entry.text
+    for i, segment in enumerate(request.segments, start=1):
+        start_time = seconds_to_srt_time(segment.start)
+        end_time = seconds_to_srt_time(segment.start + segment.duration)
+        text = segment.text
 
         srt_output.append(f"{i}\n{start_time} --> {end_time}\n{text}\n")
 
