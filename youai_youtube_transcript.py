@@ -23,8 +23,8 @@ async def get_transcript_for_subtitles(video_id: str):
     except Exception as e:
         # Handle errors (e.g., video not found or no transcript available)
         raise HTTPException(status_code=404, detail=str(e))
-    json_transcript = json.dumps(transcript, indent=4)
-    return {"video_id": video_id, "transcript": json_transcript}
+    
+    return {"video_id": video_id, "transcript": transcript}
 
 @app.get("/privacy-policy", response_class=PlainTextResponse)
 async def get_privacy_policy():
