@@ -28,14 +28,6 @@ async def get_transcript_for_subtitles(video_id: str):
     
     return {"video_id": video_id, "transcript": transcript}
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import PlainTextResponse
-from typing import List
-from pydantic import BaseModel
-import datetime
-
-app = FastAPI()
-
 # Define the structure of the data received in the POST request
 class TranscriptEntry(BaseModel):
     start: float
