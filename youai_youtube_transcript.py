@@ -14,6 +14,16 @@ async def get_transcript(video_id: str):
     full_text = " ".join([entry['text'] for entry in transcript])
     return {"video_id": video_id, "transcript": full_text}
 
+@app.get("/transcript_for_subtitles/{video_id}")
+async def get_transcript_for_subtitles(video_id: str):
+    try:
+        transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    except Exception as e:
+        # Handle errors (e.g., video not found or no transcript available)
+        raise HTTPException(status_code=404, detail=str(e))
+    json_transcript = json.dumps(transcript, indent=4)
+    return {"video_id": video_id, "transcript": json_transcript}
+
 @app.get("/privacy-policy", response_class=PlainTextResponse)
 async def get_privacy_policy():
     privacy_policy = """
