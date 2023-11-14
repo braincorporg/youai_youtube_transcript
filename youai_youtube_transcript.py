@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from youtube_transcript_api import YouTubeTranscriptApi
 from fastapi.responses import PlainTextResponse
 import json
+from typing import List
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -25,6 +27,40 @@ async def get_transcript_for_subtitles(video_id: str):
         raise HTTPException(status_code=404, detail=str(e))
     
     return {"video_id": video_id, "transcript": transcript}
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
+from typing import List
+from pydantic import BaseModel
+import datetime
+
+app = FastAPI()
+
+# Define the structure of the data received in the POST request
+class TranscriptEntry(BaseModel):
+    start: float
+    duration: float
+    text: str
+
+# Function to convert seconds to SRT time format
+def seconds_to_srt_time(seconds):
+    return str(datetime.timedelta(seconds=seconds)).replace('.', ',')
+
+@app.post("/convert_to_srt")
+async def convert_to_srt(transcript_entries: List[TranscriptEntry]):
+    srt_output = []
+
+    for i, entry in enumerate(transcript_entries, start=1):
+        start_time = seconds_to_srt_time(entry.start)
+        end_time = seconds_to_srt_time(entry.start + entry.duration)
+        text = entry.text
+
+        srt_output.append(f"{i}\n{start_time} --> {end_time}\n{text}\n")
+
+    # Joining all the SRT formatted strings
+    srt_formatted_transcript = "\n".join(srt_output)
+    return PlainTextResponse(srt_formatted_transcript)
+
 
 @app.get("/privacy-policy", response_class=PlainTextResponse)
 async def get_privacy_policy():
